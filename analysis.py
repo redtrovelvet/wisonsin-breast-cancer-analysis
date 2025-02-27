@@ -11,6 +11,7 @@ Importing the datasets
 df_train = pd.read_csv("hf://datasets/wwydmanski/wisconsin-breast-cancer/train.csv")
 df_test = pd.read_csv("hf://datasets/wwydmanski/wisconsin-breast-cancer/test.csv")
 
+
 '''
 Preprocessing the test dataset
 '''
@@ -39,3 +40,23 @@ new_column_names = [
     'concave_points_worst', 'symmetry_worst', 'fractal_dimension_worst'
 ]
 X_test.columns = new_column_names
+
+
+'''
+Preprocessing the train dataset
+'''
+# Dropping the first column (id column) from the train dataset
+df_train.drop(columns=["Unnamed: 0"],inplace=True)
+
+# Separating the diagnosis column (response) from the train dataset 
+y_train = df_train['y']
+
+# Covnerting diagnosis labels to binary: B -> 0, M -> 1
+y_train = y_train.map({'B': 0, 'M': 1})
+
+# Dropping the diagnosis column from the train dataset
+X_train = df_train.drop(columns=['y'])
+
+# Renaming columns to be descriptive
+X_train.columns = new_column_names
+
