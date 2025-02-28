@@ -6,7 +6,6 @@ import math
 from sklearn.preprocessing import StandardScaler
 import sklearn.model_selection as skm
 from sklearn.linear_model import LogisticRegression
-from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 
 ##############################
@@ -48,7 +47,7 @@ df_test['diagnosis'] = df_test['diagnosis'].map({'B': 0, 'M': 1})
 ##############################
 # Creating a DataFrame with predictors and response for exploration
 df_explore = df_train.copy()
-'''
+
 # Summary statistics for each feature grouped by diagnosis
 group_stats = df_explore.groupby('diagnosis').describe().T
 print(group_stats)
@@ -61,7 +60,7 @@ plt.xticks(rotation=35, ha='right')
 plt.yticks(rotation=0)
 plt.title("Correlation Heatmap of All Features")
 plt.show()
-'''
+
 
 
 ##############################
@@ -115,39 +114,23 @@ for i in range(n_groups):
 
 
 ##############################
-# 6. Feature Selection 
+# 6. Feature Selection Based on Correlation
 ##############################
+# Reattach column names by converting to DataFrame
+df_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+df_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
 
-# Compting VIF values on the scaled training predictors to check for mullticollinearity
-# Compute VIF on the scaled training predictors
-df_X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+# Define your drop list based on your correlation analysis
+drop_list_cor = [
+    'perimeter_mean', 'radius_mean', 'compactness_mean', 'concave_points_mean',
+    'radius_se', 'perimeter_se', 'radius_worst', 'perimeter_worst',
+    'compactness_worst', 'concave_points_worst', 'compactness_se', 'concave_points_se',
+    'texture_worst', 'area_worst'
+]
 
-def compute_vif(df):
-    vif_df = pd.DataFrame()
-    vif_df["Feature"] = df.columns
-    vif_df["VIF"] = [variance_inflation_factor(df.values, i) for i in range(df.shape[1])]
-    return vif_df
+# Drop the columns from the scaled DataFrames
+X_train_scaled_final = df_train_scaled.drop(columns=drop_list_cor)
+X_test_scaled_final = df_test_scaled.drop(columns=drop_list_cor)
 
-vif_data = compute_vif(df_X_train_scaled)
-print("Initial VIF values:")
-print(vif_data)
-
-# Set a threshold (e.g., 5). Iteratively remove the feature with highest VIF until all VIFs are below the threshold.
-threshold = 5
-iteration = 1
-while vif_data['VIF'].max() > threshold:
-    max_feature = vif_data.sort_values('VIF', ascending=False)['Feature'].iloc[0]
-    max_vif = vif_data.sort_values('VIF', ascending=False)['VIF'].iloc[0]
-    print(f"Iteration {iteration}: Removing feature '{max_feature}' with VIF = {max_vif:.2f}")
-    
-    # Remove the feature with highest VIF
-    df_X_train_scaled = df_X_train_scaled.drop(columns=[max_feature])
-    
-    # Recompute VIF values
-    vif_data = compute_vif(df_X_train_scaled)
-    print(vif_data, "\n")
-    iteration += 1
-
-print("Final feature set after VIF-based removal:")
-print(df_X_train_scaled.columns.tolist())
-
+# Now, X_train_scaled_final and X_test_scaled_final contain only the selected features
+print("Remaining columns:", X_train_scaled_final.columns.tolist())
