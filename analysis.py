@@ -51,6 +51,7 @@ df_explore = df_train.copy()
 
 # Summary statistics for each feature grouped by diagnosis
 group_stats = df_explore.groupby('diagnosis').describe().T
+#pd.set_option('display.max_rows', None)
 print(group_stats)
 
 # Heatmap of the correlation matrix of all features 
