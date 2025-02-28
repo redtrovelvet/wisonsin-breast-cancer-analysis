@@ -44,7 +44,6 @@ df_train['diagnosis'] = df_train['diagnosis'].map({'B': 0, 'M': 1})
 df_test['diagnosis'] = df_test['diagnosis'].map({'B': 0, 'M': 1})
 
 
-'''
 ##############################
 # 3. Data Exploration on Raw Data
 ##############################
@@ -63,7 +62,6 @@ plt.xticks(rotation=35, ha='right')
 plt.yticks(rotation=0)
 plt.title("Correlation Heatmap of All Features")
 plt.show()
-'''
 
 
 ##############################
@@ -81,7 +79,6 @@ X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
 
-'''
 ##############################
 # 5. Visualizing Scaled Data with Box Plots
 ##############################
@@ -115,7 +112,6 @@ for i in range(n_groups):
     plt.title(f"Box Plots of Scaled Features {start+1} to {end} by Diagnosis")
     plt.tight_layout()
     plt.show()
-'''
 
 
 ##############################
