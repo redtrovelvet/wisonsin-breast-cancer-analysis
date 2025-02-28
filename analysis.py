@@ -9,7 +9,6 @@ import sklearn.model_selection as skm
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, roc_auc_score
 
 
-
 ##############################
 # 1. Importing the Datasets
 ##############################
@@ -199,7 +198,7 @@ print("Test Accuracy:", acc)
 
 
 ##############################
-# 9. Data Visualization: Coefficient Bar Plot
+# 9.1 Data Visualization: Coefficient Bar Plot
 ##############################
 coef = results.params[1:]  # excluding constant
 odds_ratios = np.exp(coef)
@@ -215,7 +214,7 @@ plt.show()
 
 
 ##############################
-# 9. Data Visualization: ROC Curve and AUC
+# 9.2 Data Visualization: ROC Curve and AUC
 ##############################
 fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
 auc = roc_auc_score(y_test, y_pred_prob)
