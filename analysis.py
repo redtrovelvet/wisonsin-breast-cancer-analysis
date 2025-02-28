@@ -199,7 +199,22 @@ print("Test Accuracy:", acc)
 
 
 ##############################
-# 9.1 Data Visualization: Coefficient Bar Plot
+# 9.1 Data Visualization: Confusion Matrix
+##############################
+# Create a darker blue colormap
+dark_cmap = sns.dark_palette("blue", as_cmap=True)
+
+# Plot the confusion matrix using the darker colormap
+plt.figure(figsize=(6,4))
+sns.heatmap(cm, annot=True, fmt="d", cmap=dark_cmap)
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.title("Confusion Matrix (Test Set)")
+plt.show()
+
+
+##############################
+# 9.2 Data Visualization: Coefficient Bar Plot
 ##############################
 coef = results.params[1:]  # excluding constant
 odds_ratios = np.exp(coef)
@@ -215,7 +230,7 @@ plt.show()
 
 
 ##############################
-# 9.2 Data Visualization: ROC Curve and AUC
+# 9.3 Data Visualization: ROC Curve and AUC
 ##############################
 fpr, tpr, thresholds = roc_curve(y_test, y_pred_prob)
 auc = roc_auc_score(y_test, y_pred_prob)
