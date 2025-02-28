@@ -216,16 +216,28 @@ plt.show()
 ##############################
 # 9.2 Data Visualization: Coefficient Bar Plot
 ##############################
-coef = results.params[1:]  # excluding constant
-odds_ratios = np.exp(coef)
-features = X_train_scaled_final.columns
+# Get all parameter names (including 'const')
+param_names = results.params.index
 
-plt.figure(figsize=(10,6))
-plt.bar(features, odds_ratios)
-plt.yscale('log')  # Switch to log scale
-plt.xticks(rotation=30, ha='right')
+# Drop 'const' from both names and coefficients
+param_names = param_names.drop('const')
+coef = results.params.drop('const')
+odds_ratios = np.exp(coef)
+
+# Now param_names and coef (or odds_ratios) have matching order
+print("Parameter Names:", param_names)
+print("Odds Ratios:", odds_ratios)
+
+# Plot in the statsmodels order
+x_positions = np.arange(len(param_names))
+
+plt.figure(figsize=(10, 6))
+plt.bar(x_positions, odds_ratios, align='center')
+plt.yscale('log')  # Use log scale
+plt.xticks(x_positions, param_names, rotation=45, ha='right')
 plt.ylabel("Odds Ratio (log scale)")
 plt.title("Odds Ratios of Predictors from Logistic Regression")
+plt.tight_layout()
 plt.show()
 
 
