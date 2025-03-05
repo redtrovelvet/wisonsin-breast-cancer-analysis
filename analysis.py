@@ -5,6 +5,7 @@ import seaborn as sns
 import math
 from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 import sklearn.model_selection as skm
 from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, roc_auc_score
 
@@ -115,26 +116,40 @@ for i in range(n_groups):
 
 
 ##############################
-# 6. Feature Selection Based on Correlation
+# 6. Automatic VIF-based Feature Selection
 ##############################
-# Reattaching column names by converting to DataFrame
-df_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
-df_test_scaled = pd.DataFrame(X_test_scaled, columns=X_test.columns)
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
-# Defining drop list based on correlation analysis
-drop_list_cor = [
-    'perimeter_mean', 'radius_mean', 'compactness_mean', 'concave_points_mean',
-    'radius_se', 'perimeter_se', 'radius_worst', 'perimeter_worst',
-    'compactness_worst', 'concave_points_worst', 'compactness_se', 'concave_points_se',
-    'texture_worst', 'area_worst'
-]
+# Convert scaled training data back to a DataFrame with original column names
+df_X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
+vif_threshold = 5  # Set VIF threshold
+iteration = 1
 
-# Drop the columns from the scaled DataFrames
-X_train_scaled_final = df_train_scaled.drop(columns=drop_list_cor)
-X_test_scaled_final = df_test_scaled.drop(columns=drop_list_cor)
+while True:
+    # Compute VIF for each feature in the current DataFrame
+    vif_data = pd.DataFrame({
+        "Feature": df_X_train_scaled.columns,
+        "VIF": [variance_inflation_factor(df_X_train_scaled.values, i) 
+                for i in range(df_X_train_scaled.shape[1])]
+    })
+    
+    # Check if the highest VIF is above the threshold
+    max_vif = vif_data["VIF"].max()
+    if max_vif <= vif_threshold:
+        break
+    
+    # Identify and drop the feature with the highest VIF
+    feature_to_drop = vif_data.sort_values("VIF", ascending=False)["Feature"].iloc[0]
+    print(f"Iteration {iteration}: Dropping feature '{feature_to_drop}' with VIF = {max_vif:.2f}")
+    df_X_train_scaled = df_X_train_scaled.drop(columns=[feature_to_drop])
+    iteration += 1
 
-# Now, X_train_scaled_final and X_test_scaled_final contain only the selected features
-print("Remaining columns:", X_train_scaled_final.columns.tolist())
+print("Final selected features:", df_X_train_scaled.columns.tolist())
+
+# Update both training and test sets with the selected features
+X_train_scaled_final = df_X_train_scaled
+X_test_scaled_final = pd.DataFrame(X_test_scaled, columns=X_test.columns)[df_X_train_scaled.columns.tolist()]
+print("Remaining columns after VIF feature selection:", X_train_scaled_final.columns.tolist())
 
 
 ##############################
