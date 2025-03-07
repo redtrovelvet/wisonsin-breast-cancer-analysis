@@ -118,8 +118,6 @@ for i in range(n_groups):
 ##############################
 # 6. Automatic VIF-based Feature Selection
 ##############################
-from statsmodels.stats.outliers_influence import variance_inflation_factor
-
 # Convert scaled training data back to a DataFrame with original column names
 df_X_train_scaled = pd.DataFrame(X_train_scaled, columns=X_train.columns)
 vif_threshold = 5  # Set VIF threshold
