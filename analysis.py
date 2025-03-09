@@ -142,12 +142,11 @@ while True:
     df_X_train_scaled = df_X_train_scaled.drop(columns=[feature_to_drop])
     iteration += 1
 
-print("Final selected features:", df_X_train_scaled.columns.tolist())
 
 # Update both training and test sets with the selected features
 X_train_scaled_final = df_X_train_scaled
 X_test_scaled_final = pd.DataFrame(X_test_scaled, columns=X_test.columns)[df_X_train_scaled.columns.tolist()]
-print("Remaining columns after VIF feature selection:", X_train_scaled_final.columns.tolist())
+print("Final selected features:", X_train_scaled_final.columns.tolist())
 
 
 ##############################
@@ -160,7 +159,6 @@ X_test_sm = sm.add_constant(X_test_scaled_final, prepend=False)
 ##############################
 # 7. K-Fold Cross-Validation using Statsmodels on the Training Set
 ##############################
-
 kf = skm.KFold(n_splits=5, shuffle=True, random_state=42)
 cv_scores = []
 
